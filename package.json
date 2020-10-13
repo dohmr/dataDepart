@@ -1,0 +1,25 @@
+{
+  "name": "dataDepart",
+  "version": "1.0.0",
+  "description": "Manage department employees by role, etc...",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dohmr/dataDepart.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dohmr/dataDepart/issues"
+  },
+  "homepage": "https://github.com/dohmr/dataDepart#readme",
+  "dependencies": {
+    "inquirer": "^7.3.3",
+    "mysql": "^2.18.1"
+  }
+}
