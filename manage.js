@@ -23,6 +23,9 @@ connection.connect((err) => {
     // viewDeps();
     // viewRole();
     // viewEmploy();
+    // updateRole();
+    // addDeps();
+    // addEmploy();
     start();
 });
 
@@ -37,7 +40,7 @@ function start() {
             "View Employees",
             "Add Departments",
             "Add Roles",
-            "Add Employees",
+            "Add Employee",
             "Update Position",
             "Exit, Instead",
         ]
@@ -53,6 +56,12 @@ function start() {
             case "View Employees":
                 viewEmploy();
                 break;
+            case "Add Departments":
+                addDeps();
+                break;
+            case "Add Employee":
+                addEmploy();
+                break;
             case "Update Position":
                 updateRole();
                 break;
@@ -66,7 +75,17 @@ function start() {
     });
 }
 
-
+function viewOnlyDeps() {
+    const query = `SELECT * FROM department`;
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        console.log('\n');
+        console.log('VIEW DEPARTMENTs');
+        console.log('\n');
+        console.table(res);
+        start();
+    });
+}
 
 function viewDeps() {
     const query = `SELECT department.name AS department, role.title as position, employee.id, employee.first_name, employee.last_name
@@ -134,6 +153,7 @@ function updateRole() {
                 }
             }
         ]).then(function (answer) {
+            console.log('\n');
             console.log(answer);
             const name = answer.employeeName;
             const query = "SELECT * FROM role";
@@ -143,17 +163,17 @@ function updateRole() {
                         name: "role",
                         type: "list",
                         message: "Change Position?",
-                        choices: function () {
+                        choices: () => {
                             rolesArray = [];
                             res.forEach(res => {
                                 rolesArray.push(res.title)
-
                             })
                             return rolesArray;
                         }
                     }
                 ]).then(function (rolesAnswer) {
                     const role = rolesAnswer.role;
+                    console.log('\n');
                     console.log(rolesAnswer.role);
                     const query = 'SELECT * FROM role WHERE title = ?';
                     connection.query(query, [role], (err, res) => {
@@ -161,9 +181,11 @@ function updateRole() {
                         let roleId = res[0].id;
                         let query = "UPDATE employee SET role_id ? WHERE last_name ?";
                         let values = [roleId, name]
+                        console.log('\n');
                         console.log(values);
                         connection.query(query, values,
                             function (err, res, fields) {
+                                console.log('\n');
                                 console.log(`You have updated ${name}'s position to ${role}.`)
                             })
                         viewEmploy();
@@ -173,17 +195,60 @@ function updateRole() {
         })
     })
 }
-// function viewDeps() {
-//     const query = `SELECT * FROM department;`
-//     connection.query(query, (err, res) => {
-//         if (err) throw err;
-//         console.log('\n');
-//         console.log('VIEW EMPLOYEE BY DEPARTMENT');
-//         console.log('\n');
-//         console.table(res);
 
-//     });
-// }
+function addDeps() {
+    inquirer.prompt({
+        name: "department",
+        type: "input",
+        message: "What is the name of the new department?",
+    })
+        .then((answer) => {
+            const query = "INSERT INTO department (name) VALUE (?) ";
+            connection.query(query, answer.department, (err, res) => {
+                console.log(res);
+                console.log(`You have added this department: ${(answer.department).toUpperCase()}.`)
+            })
+            viewOnlyDeps();
+        })
+}
+
+async function addEmploy() {
+    const query = 'SELECT * FROM role';
+    connection.query(query, (err, answer) => {
+        if (err) throw (err);
+        inquirer.prompt([{
+            type: "input",
+            name: "first",
+            message: "Add a First Name.",
+        }, {
+            type: "input",
+            name: "last",
+            message: "Add a First Name.",
+        }, {
+            type: "position",
+            name: "role",
+            message: "Add a First Name.",
+            choices:
+                () => {
+                    let positions = [];
+                    answer.forEach(answer => {
+                        positions.push(answer.title);
+                    })
+                    return positions;
+                }
+        }
+        ]).then((answer) => {
+            const position = answer.position;
+            const query = 'SELECT * FROM role';
+            connection.query(query, (err, res) => {
+                if (err) throw (err);
+                const filter = res.filter((res) => {
+                    return res.title == position;
+                })
+            })
+        })
+    })
+}
 
 
 
