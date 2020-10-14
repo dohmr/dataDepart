@@ -7,7 +7,7 @@ View / Add / Edit Employees with the use of MySQL database.
 
 ## Install
 
-Clone repo, Here. [dohmr / takeNotes Repo](https://github.com/dohmr/dataDepart)
+Clone repo, Here. [dohmr / dataDepart Repo](https://github.com/dohmr/dataDepart)
 
 Open via Code Editor. 
 
