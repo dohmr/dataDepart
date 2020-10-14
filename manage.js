@@ -20,10 +20,50 @@ connection.connect((err) => {
         throw err;
     }
     console.log("connected as id " + connection.threadId + "\n");
-    viewDeps();
-    viewRole();
-    viewEmploy();
+    // viewDeps();
+    // viewRole();
+    // viewEmploy();
+    start();
 });
+
+function start() {
+    inquirer.prompt({
+        type: "list",
+        name: "choice",
+        message: "How would you like to proceed?",
+        choices: [
+            "View Departments",
+            "View Roles",
+            "View Employees",
+            "Add Departments",
+            "Add Roles",
+            "Add Employees",
+            "Update Roles",
+            "Exit, Instead",
+        ]
+    }).then(answer => {
+        // console.log('answer', answer);
+        switch (answer.choice) {
+            case "View Departments":
+                viewDeps();
+                break;
+            case "View Roles":
+                viewRole();
+                break;
+            case "View Employees":
+                viewEmploy();
+                break;
+
+
+
+            case "Exit, Instead":
+                connection.end();
+                break;
+        }
+    });
+}
+
+
 
 function viewDeps() {
     const query = `SELECT * FROM department;`
@@ -33,7 +73,7 @@ function viewDeps() {
         console.log('VIEW EMPLOYEE DEPARTMENTs');
         console.log('\n');
         console.table(res);
-
+        start();
     });
 }
 
@@ -45,7 +85,7 @@ function viewRole() {
         console.log('VIEW ROLES OF EMPLOYEES');
         console.log('\n');
         console.table(res);
-
+        start();
     });
 }
 function viewEmploy() {
@@ -56,7 +96,7 @@ function viewEmploy() {
         console.log('VIEW ALL EMPLOYEES');
         console.log('\n');
         console.table(res);
-
+        start();
     });
 
 }
