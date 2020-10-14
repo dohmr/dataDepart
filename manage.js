@@ -78,7 +78,11 @@ function viewDeps() {
 }
 
 function viewRole() {
-    const query = `SELECT * FROM role;`
+    const query = `SELECT role.title, employee.id, employee.first_name, employee.last_name, department.name AS position
+    FROM employee
+    LEFT JOIN role ON (role.id = employee.role_id)
+    LEFT JOIN department ON (department.id = role.department_id)
+    ORDER BY role.title;`
     connection.query(query, (err, res) => {
         if (err) throw err;
         console.log('\n');
@@ -89,7 +93,12 @@ function viewRole() {
     });
 }
 function viewEmploy() {
-    const query = `SELECT * FROM employee;`
+    const query = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS position, role.salary, employee.manager_id
+    FROM employee
+    LEFT JOIN employee manager on manager.id = employee.manager_id
+    INNER JOIN role ON (role.id = employee.role_id)
+    INNER JOIN department ON (department.id = role.department_id)
+    ORDER BY employee.id;`;
     connection.query(query, (err, res) => {
         if (err) throw err;
         console.log('\n');
@@ -113,16 +122,5 @@ function viewEmploy() {
 // }
 
 
-// prompts 
-//     View
-//         Employees / managers
-//         Department / roles
-//     Add
-//         Employee / managers
-//         department / role
-//     Update
-//         Employees / managers
-//         Department / roles   
 
-//         use case/switch to prompt and act
 
