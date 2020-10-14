@@ -152,8 +152,8 @@ function updateRole() {
                     return employeeArray;
                 }
             }
-        ]).then(function (answer) {
-            console.log('\n');
+        ]).then((answer) => {
+            // console.log('\n');
             console.log(answer);
             const name = answer.employeeName;
             const query = "SELECT * FROM role";
@@ -171,9 +171,9 @@ function updateRole() {
                             return rolesArray;
                         }
                     }
-                ]).then(function (rolesAnswer) {
+                ]).then((rolesAnswer) => {
                     const role = rolesAnswer.role;
-                    console.log('\n');
+                    // console.log('\n');
                     console.log(rolesAnswer.role);
                     const query = 'SELECT * FROM role WHERE title = ?';
                     connection.query(query, [role], (err, res) => {
@@ -181,7 +181,7 @@ function updateRole() {
                         let roleId = res[0].id;
                         let query = "UPDATE employee SET role_id ? WHERE last_name ?";
                         let values = [roleId, name]
-                        console.log('\n');
+                        // console.log('\n');
                         console.log(values);
                         connection.query(query, values,
                             function (err, res, fields) {
@@ -205,7 +205,7 @@ function addDeps() {
         .then((answer) => {
             const query = "INSERT INTO department (name) VALUE (?) ";
             connection.query(query, answer.department, (err, res) => {
-                console.log(res);
+                // console.log(res);
                 console.log(`You have added this department: ${(answer.department).toUpperCase()}.`)
             })
             viewOnlyDeps();
@@ -223,11 +223,11 @@ async function addEmploy() {
         }, {
             type: "input",
             name: "last",
-            message: "Add a First Name.",
+            message: "Add a Last Name.",
         }, {
-            type: "position",
-            name: "role",
-            message: "Add a First Name.",
+            type: "list",
+            name: "position",
+            message: "Choose a Position.",
             choices:
                 () => {
                     let positions = [];
