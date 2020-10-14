@@ -33,12 +33,12 @@ function start() {
         message: "How would you like to proceed?",
         choices: [
             "View Departments",
-            "View Roles",
+            "View Positions",
             "View Employees",
             "Add Departments",
             "Add Roles",
             "Add Employees",
-            "Update Roles",
+            "Update Position",
             "Exit, Instead",
         ]
     }).then(answer => {
@@ -47,11 +47,14 @@ function start() {
             case "View Departments":
                 viewDeps();
                 break;
-            case "View Roles":
+            case "View Positions":
                 viewRole();
                 break;
             case "View Employees":
                 viewEmploy();
+                break;
+            case "Update Position":
+                updateRole();
                 break;
 
 
@@ -66,11 +69,15 @@ function start() {
 
 
 function viewDeps() {
-    const query = `SELECT * FROM department;`
+    const query = `SELECT department.name AS department, role.title as position, employee.id, employee.first_name, employee.last_name
+    FROM employee
+    LEFT JOIN role ON (role.id = employee.role_id)
+    LEFT JOIN department ON (department.id = role.department_id)
+    ORDER BY department.name;`
     connection.query(query, (err, res) => {
         if (err) throw err;
         console.log('\n');
-        console.log('VIEW EMPLOYEE DEPARTMENTs');
+        console.log('VIEW EMPLOYEE by DEPARTMENTs');
         console.log('\n');
         console.table(res);
         start();
@@ -78,7 +85,7 @@ function viewDeps() {
 }
 
 function viewRole() {
-    const query = `SELECT role.title, employee.id, employee.first_name, employee.last_name, department.name AS position
+    const query = `SELECT role.title as position, employee.id, employee.first_name, employee.last_name, department.name AS department
     FROM employee
     LEFT JOIN role ON (role.id = employee.role_id)
     LEFT JOIN department ON (department.id = role.department_id)
@@ -93,7 +100,7 @@ function viewRole() {
     });
 }
 function viewEmploy() {
-    const query = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS position, role.salary, employee.manager_id
+    const query = `SELECT employee.id, employee.first_name, employee.last_name, role.title as position, department.name AS department, role.salary, employee.manager_id
     FROM employee
     LEFT JOIN employee manager on manager.id = employee.manager_id
     INNER JOIN role ON (role.id = employee.role_id)
@@ -108,6 +115,63 @@ function viewEmploy() {
         start();
     });
 
+}
+function updateRole() {
+    const query = 'SELECT * FROM employee';
+    connection.query(query, (err, result) => {
+        if (err) throw (err);
+        inquirer.prompt([
+            {
+                name: "employeeName",
+                type: "list",
+                message: "Which Employee?",
+                choices: function () {
+                    employeeArray = [];
+                    result.forEach(result => {
+                        employeeArray.push(result.last_name);
+                    })
+                    return employeeArray;
+                }
+            }
+        ]).then(function (answer) {
+            console.log(answer);
+            const name = answer.employeeName;
+            const query = "SELECT * FROM role";
+            connection.query(query, (err, res) => {
+                inquirer.prompt([
+                    {
+                        name: "role",
+                        type: "list",
+                        message: "Change Position?",
+                        choices: function () {
+                            rolesArray = [];
+                            res.forEach(res => {
+                                rolesArray.push(res.title)
+
+                            })
+                            return rolesArray;
+                        }
+                    }
+                ]).then(function (rolesAnswer) {
+                    const role = rolesAnswer.role;
+                    console.log(rolesAnswer.role);
+                    const query = 'SELECT * FROM role WHERE title = ?';
+                    connection.query(query, [role], (err, res) => {
+                        if (err) throw (err);
+                        let roleId = res[0].id;
+                        let query = "UPDATE employee SET role_id ? WHERE last_name ?";
+                        let values = [roleId, name]
+                        console.log(values);
+                        connection.query(query, values,
+                            function (err, res, fields) {
+                                console.log(`You have updated ${name}'s position to ${role}.`)
+                            })
+                        viewEmploy();
+                    })
+                })
+            })
+        })
+    })
 }
 // function viewDeps() {
 //     const query = `SELECT * FROM department;`
