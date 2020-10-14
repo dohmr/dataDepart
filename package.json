@@ -2,10 +2,10 @@
   "name": "dataDepart",
   "version": "1.0.0",
   "description": "Manage department employees by role, etc...",
-  "main": "server.js",
+  "main": "manage.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node manage.js"
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/dohmr/dataDepart#readme",
   "dependencies": {
+    "console.table": "^0.10.0",
     "inquirer": "^7.3.3",
     "mysql": "^2.18.1"
   }
